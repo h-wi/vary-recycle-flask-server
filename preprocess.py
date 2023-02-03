@@ -9,18 +9,27 @@ import json
 # determined by the first position in the shape tuple, in this case 1
 
 def preprocessImage(inputImg) :
-    reqData = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-    # Replace this with the path to your image
-    image = inputImg.convert("RGB")
-    # resizing the image to be at least 224x224 and then cropping from the center
-    size = (224, 224)
-    image = ImageOps.fit(image, size, Image.Resampling.LANCZOS)
-    # turn the image into a numpy array
+    # float타입 값을 가질 수 있는 640x640의 3차원 빈 Tensor 1개 생성 
+    reqData = np.ndarray(shape=(1, 640, 640, 3), dtype=np.float32)
+    
+    # 받아온 이미지를 640x640으로 맞추기(YOLOv5)
+    size = (640, 640)
+    image = ImageOps.fit(inputImg, size, Image.Resampling.LANCZOS)
+    
+     # turn the image into a numpy array (640x640x3)
     image_array = np.asarray(image)
-    # Normalize the image
-    normalized_image_array = (image_array.astype(np.float32) / 127.5) - 1
-    # Load the image into the array
-    reqData[0] = normalized_image_array
-    data = json.dumps({"instances": reqData[0:3].tolist()})
+    
+    # Normalize the image (RGB니까 255로 nomalized)
+    normalized_image_array = (image_array.astype(np.float32) / 225.0)     
+    
+    # Load the image into the array (그대로 복붙)
+    reqData = normalized_image_array
+    
+    #########################################################
+    # YOLO모델은 텐서에 batch dimension이 필요해서 아마 안될 것 같긴한데..
+    # 이 코드는 (640,640,3)을 보내는 코드인데 안되면 맨 앞에 batch dimension 추가해야 
+    data = json.dumps({"instances": reqData[0:3].tolist()}) 
+    
+    #######################################################
     return data
     
