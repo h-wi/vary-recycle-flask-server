@@ -25,7 +25,11 @@ def preprocessImage(inputImg) :
     # Load the image into the array (그대로 복붙)
     reqData = normalized_image_array
     
+    #########################################################
+    # YOLO모델은 텐서에 batch dimension이 필요해서 아마 안될 것 같긴한데..
+    # 이 코드는 (640,640,3)을 보내는 코드인데 안되면 맨 앞에 batch dimension 추가해야 
     data = json.dumps({"instances": reqData[0:3].tolist()}) 
     
+    #######################################################
     return data
     
