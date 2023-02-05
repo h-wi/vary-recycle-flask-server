@@ -21,25 +21,19 @@ class HelloWorld(Resource):
 def test():
     base64Image = request.json[0]['image']
     recycleType = request.json[0]['type']
-    
     imageStr = base64.b64decode(base64Image)
     # base64 형식의 이미지
-    
     nparr = np.fromstring(imageStr, np.uint8)
     # String 형태의 imageStr을 NumPy Tensor Array로 변환
-    
     img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR) # cv2.IMREAD_COLOR in OpenCV 3.1
     # nuarr의 color 데이터를 img_np에 새롭게 load
-    
     img_cvt = cv2.cvtColor(img_np , cv2.COLOR_BGR2RGB)
     # BGR형식의 color를 RGB 형식으로 Convert
-    
     img = Image.fromarray(img_cvt)
     # 이미지의 각 픽셀에 대응하는 값을 가진 Array(img_cvt)를 통해 이미지 생성
-    
     img = img.convert("RGB")
     # RGB 변환? 이미 하지 않았나
-    
+
     input_img=prepro.preprocessImage(img) #image 형태로 넘긴다?
     result=tf.reqToServer(recycleType,input_img)
     return result
