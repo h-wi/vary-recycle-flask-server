@@ -21,6 +21,7 @@ class HelloWorld(Resource):
 def test():
     base64Image = request.json[0]['image']
     recycleType = request.json[0]['type']
+    print(recycleType)
     imageStr = base64.b64decode(base64Image)
     # base64 형식의 이미지
     nparr = np.fromstring(imageStr, np.uint8)
@@ -36,6 +37,7 @@ def test():
 
     input_img=prepro.preprocessImage(img) #image 형태로 넘긴다?
     result=tf.reqToServer(recycleType,input_img)
+
     return result
 
 if __name__ == "__main__":

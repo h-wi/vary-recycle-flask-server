@@ -1,14 +1,7 @@
 import requests
 import json
 
-_server = "127.0.0.1:"
-
-ports = {'pet': '8503',
-         'can': '8501'} # Add GLA and PAP
-
-url = 'http://'+_server
-
-server_path = '/v1/models/recycle_'
+url = 'http://127.0.0.1:8501/v1/models/'
 
 headers = {"content-type": "application/json"}
 
@@ -28,7 +21,7 @@ PAP_PROBABILITY = 0.6
 
 
 def reqToServer(recycleType,img):
-    specified_url = url+ports[recycleType]+server_path+recycleType+':predict'
+    specified_url = url+recycleType+':predict'
     json_response = requests.post(specified_url, data=img, headers=headers)
     predictions = json_response.json()
     result = predictions['predictions']
@@ -53,16 +46,16 @@ def reqToServer(recycleType,img):
     
     for i in range(len(correct)):
         if (recycleType == 'pet'): # 5: distorted, 6: label, 7 : lid
-         if (correct[i][6] < PET_LABEL_PROBABILITY && correct[i][7] > PET_LID_PROBABILITY):
-                  return 'success'
+            if (correct[i][6] < PET_LABEL_PROBABILITY and correct[i][7] > PET_LID_PROBABILITY):
+                return 'success'
         elif (recycleType == 'can'):
-         if (correct[i][6] > CAN_PROBABILITY):
-                  return 'success'
-        elif (recycleType == 'gla'):
-         if (correct[i][5] < GLA_CONTENT_PROBABILITY && GLA_PROBABILITY):
-                  return 'success'
-        elif (recycleType == 'pap'):
-         if (correct[i][5] > PAP_PROBABILITY || correct[i][6] > PAP_PROBABILITY):
-                  return 'success'
+            if (correct[i][6] > CAN_PROBABILITY):
+                return 'success'
+        elif (recycleType == 'glass'):
+            if (correct[i][5] < GLA_CONTENT_PROBABILITY and GLA_PROBABILITY):
+                return 'success'
+        elif (recycleType == 'paper'):
+            if (correct[i][5] > PAP_PROBABILITY or correct[i][6] > PAP_PROBABILITY):
+                return 'success'
          
     return 'fail' # 아무것도 안되면 fail
