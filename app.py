@@ -1,6 +1,8 @@
 from flask import Flask,request  # 서버 구현을 위한 Flask 객체 import
 from flask_restx import Api, Resource  # Api 구현을 위한 Api 객체 import
 from werkzeug.utils import secure_filename
+import firebase_admin
+from firebase_admin import credentials, firestore, initialize_app
 import base64
 import preprocess as prepro
 import tfServing as tf
@@ -11,14 +13,23 @@ import cv2
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
 api = Api(app)  # Flask 객체에 Api 객체 등록
 
+cred = credentials.Certificate('firestore_admin.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 @api.route('/hello')  # 데코레이터 이용, '/hello' 경로에 클래스 등록
 class HelloWorld(Resource):
     def get(self):  # GET 요청시 리턴 값에 해당 하는 dict를 JSON 형태로 반환
         return {"hello": "world!"}
 
+def success(uid) :
+    userData = db.collection('users').document(uid)
+    userData.update({"credit":firestore.Increment(30)})
+
+
 @app.route('/test', methods=['POST','GET'])
 def test():
+    uid = request.json[0]['uid']
     base64Image = request.json[0]['image']
     recycleType = request.json[0]['type']
     print(recycleType)
@@ -37,8 +48,10 @@ def test():
 
     input_img=prepro.preprocessImage(img) #image 형태로 넘긴다?
     result=tf.reqToServer(recycleType,input_img)
-
+    if result != 'success':
+        success(uid)
     return result
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=80)
+    
