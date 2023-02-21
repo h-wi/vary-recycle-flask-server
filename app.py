@@ -10,7 +10,10 @@ import time
 
 app = Flask(__name__)  # Flask 객체 선언, 파라미터로 어플리케이션 패키지의 이름을 넣어줌.
 api = Api(app)  # Flask 객체에 Api 객체 등록
-        
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=fireReq.resetCount, trigger='cron', hour=23, minute=59, second=58)
+scheduler.start()         
+
 @app.route('/test', methods=['POST','GET'])
 def test():
     try :
@@ -40,8 +43,5 @@ class HelloWorld(Resource):
         return {"hello": "world!"}
 
 if __name__ == "__main__":
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(func=fireReq.resetCount, trigger='cron', hour=23, minute=59, second=58)
-    scheduler.start()    
     app.run(debug=True, host='0.0.0.0', port=80)
             
