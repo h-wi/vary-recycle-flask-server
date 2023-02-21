@@ -4,11 +4,22 @@ from PIL import Image, ImageOps  # Install pillow instead of PIL
 import numpy as np
 import requests
 import json
+import cv2
+import base64
 # Create the array of the right shape to feed into the keras model
 # The 'length' or number of images you can put into the array is
 # determined by the first position in the shape tuple, in this case 1
 
-def preprocessImage(inputImg) :
+def preprocessImage(base64Image):
+        imageStr = base64.b64decode(base64Image)
+        nparr = np.fromstring(imageStr, np.uint8)
+        img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        img_cvt = cv2.cvtColor(img_np , cv2.COLOR_BGR2RGB)
+        img = Image.fromarray(img_cvt)
+        img = img.convert("RGB")
+        return imageToJson(img)
+
+def imageToJson(inputImg) :
     try:
         # float타입 값을 가질 수 있는 640x640의 3차원 빈 Tensor 1개 생성 
         reqData = np.ndarray(shape=(1, 640, 640, 3), dtype=np.float32)
