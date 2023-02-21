@@ -102,7 +102,7 @@ def reqToServer(recycleType,img):
         else:
             model_results['result'] = 'fail'
             
-        return model_results
+        return model_results['result']
     except :
         print("[Error] : Wrong response from ML model server")
         return 'fail'    
