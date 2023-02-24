@@ -21,6 +21,9 @@ def test():
         base64Image = request.json[0]['image']
         recycleType = request.json[0]['type']
 
+        print(f'[Req] : Client - {uid} ')
+        print(f'[Recycle Type] : {recycleType}')
+
         willPass=fireReq.willAccept(uid)
         if willPass !='True':
             return willPass
@@ -28,7 +31,7 @@ def test():
         input_img=prepro.preprocessImage(base64Image)
         result=tf.reqToServer(recycleType,input_img)
 
-        if result == 'success':
+        if result['result'] == 'success':
             if fireReq.success(uid) != True:
                 return 'Failed to update credit'
         return result

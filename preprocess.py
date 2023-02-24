@@ -11,6 +11,7 @@ import base64
 # determined by the first position in the shape tuple, in this case 1
 
 def preprocessImage(base64Image):
+        print('[Preprocess] : preprocessing image')
         imageStr = base64.b64decode(base64Image)
         nparr = np.fromstring(imageStr, np.uint8)
         img_np = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
